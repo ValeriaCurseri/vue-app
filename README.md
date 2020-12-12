@@ -6,3 +6,6 @@ vue app
 4) scegli il default package
 5) cd quiz
 6) npm run serve
+7) Settaggio dei componenti necessari
+8) Installazione di Bootstrap Vue: npm install vue bootstrap-vue bootstrap
+9) importo bootstrap vue nel progetto, nel main.js
