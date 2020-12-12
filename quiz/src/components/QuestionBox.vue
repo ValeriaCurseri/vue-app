@@ -20,8 +20,18 @@
                 </b-list-group-item>
             </b-list-group>
             
-            <b-button variant="primary" href="#">Submit</b-button>
-            <b-button @click="next" variant="success" href="#">    <!-- al click sul btn next attivo la fz next -->
+            <!-- al click sul btn next attivo la fz submitAnswer che verifica se la risposta è corretta o meno -->
+            <!-- il btn submit è disattivato se non ho selezionato nessuna risposta -->
+            <b-button 
+                @click="submitAnswer" 
+                variant="primary" 
+                :disable="selectedIndex === null"
+            >
+            Submit
+            </b-button>
+
+            <!-- al click sul btn next attivo la fz next -->
+            <b-button @click="next" variant="success">
                 Next
             </b-button>
         </b-jumbotron>
@@ -32,15 +42,17 @@
     // importo la libreria lodash per stampare le risposte in ordine casuale
     import _ from 'lodash'
 
-    // per fare in modo che l'oggetto che passo nella variabile currentQuestion venga stampato in {{}} serve un passaggio nello script e nei props
+    // per fare in modo che l'oggetto che passo nel template currentQuestion da App venga stampato in {{}} serve un passaggio nello script e nei props
     export default {
         props: {
             currentQuestion: Object,
-            next: Function
+            next: Function,
+            increment: Function
         },
         data() {
             return {
                 selectedIndex: null,        // imposto selectedIndex a null e lo sovrascrivo al click con la fz selectAnswer
+                correctIndex: null,         // imposto correctIndex a null e lo sovrascrivo al click con la fz shuffleAnswers
                 shuffledAnswers: []         // imposto un array vuoto in cui andrò a pushare le risposte in ordine casuale
             }
         },
@@ -67,6 +79,14 @@
             shuffleAnswers() {
                 let answers = [...this.currentQuestion.incorrect_answers, this.currentQuestion.correct_answer]
                 this.shuffledAnswers = _.shuffle(answers)   // _ appartiene alla sintassi di shuffle e l'ho importato all'inizio dello script
+                this.correctIndex = this.shuffledAnswers.indexOf(this.currentQuestion.correct_answer)
+            },
+            submitAnswer(){
+                let isCorrect = false                           // imposto una variabile sentinella a false
+                if (this.selectedIndex === this.correctIndex) { // se l'index della risposta selezionata corrisponde all'index della risposta corretta
+                    isCorrect = true                            // la variabile sentinella diventa true
+                }
+                this.increment(isCorrect)                       // se la variabile sentinella è true, parte la fz increment (settata tra i props, si trova in App.vue e stampa su Header.vue )
             }
         }
     }
@@ -82,7 +102,7 @@
         cursor: pointer;
     }
     .selected{
-        background-color: lightblue;
+        background-color: lightblue!important;
     }
     .correct{
         background-color: green;
